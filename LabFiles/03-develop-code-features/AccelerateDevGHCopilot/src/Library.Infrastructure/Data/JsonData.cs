@@ -20,12 +20,26 @@ public class JsonData
 
     public JsonData(IConfiguration configuration)
     {
+        var basePath = AppContext.BaseDirectory;
         var section = configuration.GetSection("JsonPaths");
-        _authorsPath = section["Authors"] ?? Path.Combine("Json", "Authors.json");
-        _booksPath = section["Books"] ?? Path.Combine("Json", "Books.json");
-        _bookItemsPath = section["BookItems"] ?? Path.Combine("Json", "BookItems.json");
-        _patronsPath = section["Patrons"] ?? Path.Combine("Json", "Patrons.json");
-        _loansPath = section["Loans"] ?? Path.Combine("Json", "Loans.json");
+
+        _authorsPath = ResolvePath(section["Authors"], basePath, "Authors.json");
+        _booksPath = ResolvePath(section["Books"], basePath, "Books.json");
+        _bookItemsPath = ResolvePath(section["BookItems"], basePath, "BookItems.json");
+        _patronsPath = ResolvePath(section["Patrons"], basePath, "Patrons.json");
+        _loansPath = ResolvePath(section["Loans"], basePath, "Loans.json");
+    }
+
+    private static string ResolvePath(string? configuredValue, string basePath, string fileName)
+    {
+        if (!string.IsNullOrWhiteSpace(configuredValue))
+        {
+            return Path.IsPathRooted(configuredValue)
+                ? configuredValue
+                : Path.Combine(basePath, configuredValue);
+        }
+
+        return Path.Combine(basePath, "Json", fileName);
     }
 
     public async Task EnsureDataLoaded()
