@@ -6,8 +6,8 @@ using Microsoft.Extensions.Configuration;
 var services = new ServiceCollection();
 
 var configuration = new ConfigurationBuilder()
-.SetBasePath(Directory.GetCurrentDirectory())
-.AddJsonFile("appSettings.json")
+.SetBasePath(AppContext.BaseDirectory)
+.AddJsonFile("appSettings.json", optional: false, reloadOnChange: false)
 .Build();
 
 services.AddSingleton<IConfiguration>(configuration);
